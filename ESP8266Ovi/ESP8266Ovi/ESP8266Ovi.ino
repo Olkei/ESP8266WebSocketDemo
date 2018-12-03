@@ -6,21 +6,22 @@
 #include <ESPAsyncTCP.h>
 #include <ESPAsyncWebServer.h>
 #include <SPIFFSEditor.h>
+#include <string.h>
 
 AsyncWebServer server(80);
 AsyncWebSocket ws("/ws");
 
-// RGB led variables
+// led variables and password
 int red = 0;
 int yellow = 0;
 int green = 0;
 int redPin = 14;      //D5
 int greenPin = 12;    //D6
 int yellowPin = 13;   //D7
-String password = "";
 
+const char *correctPW = "oikea";
 const char *ssid = "ESP";
-const char *password = "passu1234";
+const char *ssidpassword = "passu1234";
 const char *hostName = "esp-async";
 const char *http_username = "admin";
 const char *http_password = "admin";
@@ -33,14 +34,14 @@ void setup()
   Serial.setDebugOutput(true);
   WiFi.hostname(hostName);
   WiFi.mode(WIFI_AP_STA);
-  WiFi.softAP(hostName, password);
-  WiFi.begin(ssid, password);
+  WiFi.softAP(hostName, ssidpassword);
+  WiFi.begin(ssid, ssidpassword);
   if (WiFi.waitForConnectResult() != WL_CONNECTED)
   {
     Serial.printf("STA: Failed!\n");
     WiFi.disconnect(false);
     delay(1000);
-    WiFi.begin(ssid, password);
+    WiFi.begin(ssid, ssidpassword);
   }
 
   pinMode(redPin, OUTPUT);
@@ -136,6 +137,7 @@ void loop()
 }
 
 
+
 void onWsEvent(AsyncWebSocket *server, AsyncWebSocketClient *client, AwsEventType type, void *arg, uint8_t *data, size_t len)
 {
   if (type == WS_EVT_CONNECT)
@@ -144,16 +146,16 @@ void onWsEvent(AsyncWebSocket *server, AsyncWebSocketClient *client, AwsEventTyp
     client->printf("Hello Client %u :)", client->id());
     client->ping();
 
-    StaticJsonBuffer<200> jsonBuffer;
-    JsonObject &root = jsonBuffer.createObject();
+   /* StaticJsonBuffer<200> jsonBuffer;
+   JsonObject &root = jsonBuffer.createObject();
     root["r"] = red;
     root["g"] = green;
     root["y"] = yellow;
-    root["p"] = password;
-    String data;
+    root["p"] = const char *pword;
+    String data; 
     //
     root.printTo(data);
-    ws.textAll(data);
+    ws.textAll(data); */
   }
   else if (type == WS_EVT_DISCONNECT)
   {
@@ -199,8 +201,19 @@ void onWsEvent(AsyncWebSocket *server, AsyncWebSocketClient *client, AwsEventTyp
       red = root["r"];
       green = root["g"];
       yellow = root["y"];
-      password = root["p"];
+      const char* pword = root["p"];
 
+      if (pword = correctPW)
+        {
+        analogWrite (yellowPin, 255);
+        analogWrite (greenPin, 255);
+        delay(10000);
+        }
+      else
+        {
+        analogWrite(redPin, 255);
+        delay(1000);
+        }
       // Relay message data to all other clients
       /*for (int i = 0; i < 10; i++)
       {
