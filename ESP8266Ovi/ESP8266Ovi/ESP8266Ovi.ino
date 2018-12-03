@@ -26,6 +26,8 @@ const char *hostName = "esp-async";
 const char *http_username = "admin";
 const char *http_password = "admin";
 
+unsigned long eventtime = 0;
+
 void onWsEvent(AsyncWebSocket *server, AsyncWebSocketClient *client, AwsEventType type, void *arg, uint8_t *data, size_t len);
 
 void setup()
@@ -131,9 +133,15 @@ void setup()
 void loop()
 {
 
-  analogWrite(redPin, red);
-  analogWrite(greenPin, green);
-  analogWrite(yellowPin, yellow);
+  
+if(millis() - eventtime >= 1000)
+{
+  digitalWrite(redPin, 0);
+  digitalWrite(yellowPin, 0);
+  digitalWrite(greenPin, 0);
+}
+
+
 }
 
 
@@ -203,17 +211,20 @@ void onWsEvent(AsyncWebSocket *server, AsyncWebSocketClient *client, AwsEventTyp
       yellow = root["y"];
       const char* pword = root["p"];
 
-      if (pword = correctPW)
+      if (root["p"] ==correctPW)
         {
+        Serial.printf("oikein! \n");
         analogWrite (yellowPin, 255);
         analogWrite (greenPin, 255);
-        delay(10000);
         }
       else
         {
+        Serial.printf("väärin! \n"); 
+        analogWrite (yellowPin, 0);
+        analogWrite (greenPin, 0);
         analogWrite(redPin, 255);
-        delay(1000);
         }
+        eventtime = millis();
       // Relay message data to all other clients
       /*for (int i = 0; i < 10; i++)
       {
