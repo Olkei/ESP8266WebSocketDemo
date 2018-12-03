@@ -29,7 +29,6 @@
         </div>
       </div>
     </div>
-
     <script>
       function sendData() {
         var passw = document.getElementById("password").value;
@@ -38,7 +37,7 @@
           p: passw,
         };
         console.log(passw);
-        package.send(message);
+        document.getElementById("password").value = "";
       }
     </script>
     <script src="jquery.slim.min.js"></script>

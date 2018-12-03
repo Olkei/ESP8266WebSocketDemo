@@ -6,7 +6,6 @@
 #include <ESPAsyncTCP.h>
 #include <ESPAsyncWebServer.h>
 #include <SPIFFSEditor.h>
-#include <string.h>
 
 AsyncWebServer server(80);
 AsyncWebSocket ws("/ws");
@@ -15,9 +14,9 @@ AsyncWebSocket ws("/ws");
 int red = 0;
 int yellow = 0;
 int green = 0;
-int redPin = 14;      //D5
-int greenPin = 12;    //D6
-int yellowPin = 13;   //D7
+int redPin = 14;    //D5
+int greenPin = 12;  //D6
+int yellowPin = 13; //D7
 
 const char *correctPW = "oikea";
 const char *ssid = "ESP";
@@ -58,7 +57,6 @@ void setup()
   SPIFFS.begin();
   ws.onEvent(onWsEvent);
   server.addHandler(&ws);
-
 
   server.addHandler(new SPIFFSEditor(http_username, http_password));
 
@@ -136,8 +134,6 @@ void loop()
   analogWrite(yellowPin, yellow);
 }
 
-
-
 void onWsEvent(AsyncWebSocket *server, AsyncWebSocketClient *client, AwsEventType type, void *arg, uint8_t *data, size_t len)
 {
   if (type == WS_EVT_CONNECT)
@@ -146,7 +142,7 @@ void onWsEvent(AsyncWebSocket *server, AsyncWebSocketClient *client, AwsEventTyp
     client->printf("Hello Client %u :)", client->id());
     client->ping();
 
-   /* StaticJsonBuffer<200> jsonBuffer;
+    /* StaticJsonBuffer<200> jsonBuffer;
    JsonObject &root = jsonBuffer.createObject();
     root["r"] = red;
     root["g"] = green;
@@ -165,6 +161,7 @@ void onWsEvent(AsyncWebSocket *server, AsyncWebSocketClient *client, AwsEventTyp
   {
     Serial.printf("ws[%s][%u] error(%u): %s\n", server->url(), client->id(), *((uint16_t *)arg), (char *)data);
   }
+
   else if (type == WS_EVT_PONG)
   {
     Serial.printf("ws[%s][%u] pong[%u]: %s\n", server->url(), client->id(), len, (len) ? (char *)data : "");
@@ -201,19 +198,20 @@ void onWsEvent(AsyncWebSocket *server, AsyncWebSocketClient *client, AwsEventTyp
       red = root["r"];
       green = root["g"];
       yellow = root["y"];
-      const char* pword = root["p"];
+      const char *pword = root["p"];
 
+      ws.text(client->id(), "received");
       if (pword = correctPW)
-        {
-        analogWrite (yellowPin, 255);
-        analogWrite (greenPin, 255);
+      {
+        analogWrite(yellowPin, 255);
+        analogWrite(greenPin, 255);
         delay(10000);
-        }
+      }
       else
-        {
+      {
         analogWrite(redPin, 255);
         delay(1000);
-        }
+      }
       // Relay message data to all other clients
       /*for (int i = 0; i < 10; i++)
       {
