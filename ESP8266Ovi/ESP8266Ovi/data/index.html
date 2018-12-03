@@ -21,27 +21,18 @@
       }
     </style>
     <div class="form-box">
-      <h3>Red</h3>
-      <input type="range" id="red" min="0" max="255" oninput="myFunc()" />
-
-      <h3>Green</h3>
-      <input type="range" id="green" min="0" max="255" oninput="myFunc()" />
-
-      <h3>Blue</h3>
-      <input type="range" id="blue" min="0" max="255" oninput="myFunc()" />
+      <div>
+        <div><h3>Password</h3></div>
+        <div>
+          <input type="password" id="password" />
+          <input type="submit" class="btn btn-primary" onclick="sendData()" />
+        </div>
+      </div>
     </div>
 
     <script>
-      function myFunc() {
-        var red = document.getElementById("red");
-        var green = document.getElementById("green");
-        var blue = document.getElementById("blue");
- 
-        var message = {
-          r: red.value,
-          g: green.value,
-          b: blue.value
-        };
+      function sendData() {
+        console.log("test");
         package.send(message);
       }
     </script>
