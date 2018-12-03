@@ -32,7 +32,12 @@
 
     <script>
       function sendData() {
-        console.log("test");
+        var passw = document.getElementById("password").value;
+        
+        var message = {
+          p: passw,
+        };
+        console.log(passw);
         package.send(message);
       }
     </script>
