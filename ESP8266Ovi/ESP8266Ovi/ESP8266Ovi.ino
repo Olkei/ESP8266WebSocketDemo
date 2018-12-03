@@ -146,16 +146,16 @@ void onWsEvent(AsyncWebSocket *server, AsyncWebSocketClient *client, AwsEventTyp
     client->printf("Hello Client %u :)", client->id());
     client->ping();
 
-    StaticJsonBuffer<200> jsonBuffer;
-   /* JsonObject &root = jsonBuffer.createObject();
+   /* StaticJsonBuffer<200> jsonBuffer;
+   JsonObject &root = jsonBuffer.createObject();
     root["r"] = red;
     root["g"] = green;
     root["y"] = yellow;
-    root["p"] = pword; */
+    root["p"] = const char *pword;
     String data; 
     //
     root.printTo(data);
-    ws.textAll(data);
+    ws.textAll(data); */
   }
   else if (type == WS_EVT_DISCONNECT)
   {
