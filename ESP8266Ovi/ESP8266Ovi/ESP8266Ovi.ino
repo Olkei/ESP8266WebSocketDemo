@@ -228,8 +228,9 @@ void onWsEvent(AsyncWebSocket *server, AsyncWebSocketClient *client, AwsEventTyp
       yellow = root["y"];
       const char *pword = root["p"];
 
-      if (root["p"] == correctPW)
-      {
+      ws.text(client->id(), "received");
+      if (root["p"] ==correctPW)
+        {
         userAnswer = 1;
         Serial.printf("oikein! \n");
         analogWrite(yellowPin, 255);
