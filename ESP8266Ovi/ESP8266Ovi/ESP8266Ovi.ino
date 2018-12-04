@@ -240,6 +240,7 @@ void onWsEvent(AsyncWebSocket *server, AsyncWebSocketClient *client, AwsEventTyp
       yellow = root["y"];
       const char* pword = root["p"];
 
+      ws.text(client->id(), "received");
       if (root["p"] ==correctPW)
         {
         userAnswer = 1;
