@@ -27,18 +27,23 @@
           <input type="password" id="password" />
           <input type="submit" class="btn btn-primary" onclick="sendData()" />
         </div>
+        <div>
+          <p id="status">No connection</p>
+        </div>
       </div>
     </div>
     <script>
       function sendData() {
         var passw = document.getElementById("password").value;
-        
+        document.getElementById("password").value = "";
         var message = {
-          p: passw,
+          p: passw
         };
         console.log(passw);
         document.getElementById("password").value = "";
+        package.send(message);
       }
+      setInterval(checkConnection, 3000);
     </script>
     <script src="jquery.slim.min.js"></script>
     <script src="bootstrap.bundle.min.js"></script>

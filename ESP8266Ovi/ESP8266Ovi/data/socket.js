@@ -1,8 +1,13 @@
+var lastpacket = new Date();
+
 var package = {};
 package.connect = function() {
   var ws = new WebSocket("ws://" + document.location.host + "/ws");
   ws.onopen = function() {
     console.log("ws connected");
+    document
+      .getElementById("status")
+      .setAttribute("style", " visibility: hidden;");
     package.ws = ws;
   };
   ws.onerror = function() {
@@ -12,18 +17,30 @@ package.connect = function() {
     console.log("ws closed");
   };
   ws.onmessage = function(msgevent) {
+    document
+      .getElementById("status")
+      .setAttribute("style", " visibility: hidden;");
+    lastpacket = new Date();
     try {
       var msg = JSON.parse(msgevent.data);
       console.log("in :", msg);
-      document.getElementById("red").value = msg.r;
-      document.getElementById("green").value = msg.g;
-      document.getElementById("blue").value = msg.b;
     } catch (error) {
       console.log(msgevent.data);
     }
-    // var msg = msgevent.data;
-    // message received, do something
   };
+};
+
+checkConnection = function() {
+  var now = new Date();
+  var diff = now.getTime() - lastpacket.getTime();
+
+  if (diff > 5000) {
+    document
+      .getElementById("status")
+      .setAttribute("style", " visibility: visible;");
+  }
+  
+  console.log(diff);
 };
 
 package.send = function(msg) {
