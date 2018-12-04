@@ -11,15 +11,16 @@ AsyncWebServer server(80);
 AsyncWebSocket ws("/ws");
 
 // led variables and password
+int MEASUREMENT = 1000;
 int KIINNI = 1000;
 int AUKI = 10000;
 int red = 0;
 int yellow = 0;
 int green = 0;
-int redPin = 14;      //D5
-int greenPin = 12;    //D6
-int yellowPin = 13;   //D7
-bool userAnswer = 0;  //check if user gave right password
+int redPin = 14;     //D5
+int greenPin = 12;   //D6
+int yellowPin = 13;  //D7
+bool userAnswer = 0; //check if user gave right password
 
 const char *correctPW = "oikea";
 const char *ssid = "ESP";
@@ -29,8 +30,12 @@ const char *http_username = "admin";
 const char *http_password = "admin";
 
 unsigned long eventtime = 0;
+unsigned long measurementEventtime = 0;
+
+int measured_value = 0;
 
 void onWsEvent(AsyncWebSocket *server, AsyncWebSocketClient *client, AwsEventType type, void *arg, uint8_t *data, size_t len);
+void measure();
 
 void setup()
 {
@@ -48,6 +53,7 @@ void setup()
     WiFi.begin(ssid, ssidpassword);
   }
 
+  //pinMode(A0, INPUT);
   pinMode(redPin, OUTPUT);
   pinMode(greenPin, OUTPUT);
   pinMode(yellowPin, OUTPUT);
@@ -134,26 +140,37 @@ void setup()
 void loop()
 {
 
-  
-if(userAnswer == 0) {
-  if(millis() - eventtime >= KIINNI)
+  if (userAnswer == 0)
+  {
+    if (millis() - eventtime >= KIINNI)
     {
-    digitalWrite(redPin, 0);
-    digitalWrite(yellowPin, 0);
-    digitalWrite(greenPin, 0);
+      digitalWrite(redPin, 0);
+      digitalWrite(yellowPin, 0);
+      digitalWrite(greenPin, 0);
     }
   }
 
-if(userAnswer == 1) {
-  if(millis() - eventtime >= AUKI)
+  if (userAnswer == 1)
+  {
+    if (millis() - eventtime >= AUKI)
     {
-    digitalWrite(redPin, 0);
-    digitalWrite(yellowPin, 0);
-    digitalWrite(greenPin, 0);
+      digitalWrite(redPin, 0);
+      digitalWrite(yellowPin, 0);
+      digitalWrite(greenPin, 0);
     }
   }
 
-
+  if (millis() - measurementEventtime >= MEASUREMENT)
+  {
+    measure();
+    Serial.printf("%d \n", measured_value);
+    StaticJsonBuffer<200> jsonBuffer;
+    JsonObject &root = jsonBuffer.createObject();
+    root["m"] = measured_value;
+    String data;
+    root.printTo(data);
+    ws.textAll(data);
+  }
 }
 
 void onWsEvent(AsyncWebSocket *server, AsyncWebSocketClient *client, AwsEventType type, void *arg, uint8_t *data, size_t len)
@@ -163,7 +180,6 @@ void onWsEvent(AsyncWebSocket *server, AsyncWebSocketClient *client, AwsEventTyp
     Serial.printf("ws[%s][%u] connect\n", server->url(), client->id());
     client->printf("Hello Client %u :)", client->id());
     client->ping();
-
   }
   else if (type == WS_EVT_DISCONNECT)
   {
@@ -212,22 +228,22 @@ void onWsEvent(AsyncWebSocket *server, AsyncWebSocketClient *client, AwsEventTyp
       yellow = root["y"];
       const char *pword = root["p"];
 
-      if (root["p"] ==correctPW)
-        {
+      if (root["p"] == correctPW)
+      {
         userAnswer = 1;
         Serial.printf("oikein! \n");
-        analogWrite (yellowPin, 255);
-        analogWrite (greenPin, 255);
-        }
+        analogWrite(yellowPin, 255);
+        analogWrite(greenPin, 255);
+      }
       else
-        {
+      {
         userAnswer = 0;
-        Serial.printf("väärin! \n"); 
-        analogWrite (yellowPin, 0);
-        analogWrite (greenPin, 0);
+        Serial.printf("väärin! \n");
+        analogWrite(yellowPin, 0);
+        analogWrite(greenPin, 0);
         analogWrite(redPin, 255);
-        }
-        eventtime = millis();
+      }
+      eventtime = millis();
       // Relay message data to all other clients
       /*for (int i = 0; i < 10; i++)
       {
@@ -281,4 +297,17 @@ void onWsEvent(AsyncWebSocket *server, AsyncWebSocketClient *client, AwsEventTyp
       }
     }
   }
+}
+
+void measure()
+{
+
+  int light;
+
+  light = (int)analogRead(A0);
+
+  // light=light*100.0;
+  measurementEventtime = millis();
+
+  measured_value = light;
 }
