@@ -12,12 +12,15 @@ AsyncWebServer server(80);
 AsyncWebSocket ws("/ws");
 
 // led variables and password
+int KIINNI = 1000;
+int AUKI = 10000;
 int red = 0;
 int yellow = 0;
 int green = 0;
 int redPin = 14;      //D5
 int greenPin = 12;    //D6
 int yellowPin = 13;   //D7
+bool userAnswer = 0;  //check if user gave right password
 
 const char *correctPW = "oikea";
 const char *ssid = "ESP";
@@ -134,12 +137,23 @@ void loop()
 {
 
   
-if(millis() - eventtime >= 1000)
-{
-  digitalWrite(redPin, 0);
-  digitalWrite(yellowPin, 0);
-  digitalWrite(greenPin, 0);
-}
+if(userAnswer == 0) {
+  if(millis() - eventtime >= KIINNI)
+    {
+    digitalWrite(redPin, 0);
+    digitalWrite(yellowPin, 0);
+    digitalWrite(greenPin, 0);
+    }
+  }
+
+if(userAnswer == 1) {
+  if(millis() - eventtime >= AUKI)
+    {
+    digitalWrite(redPin, 0);
+    digitalWrite(yellowPin, 0);
+    digitalWrite(greenPin, 0);
+    }
+  }
 
 
 }
@@ -213,12 +227,14 @@ void onWsEvent(AsyncWebSocket *server, AsyncWebSocketClient *client, AwsEventTyp
 
       if (root["p"] ==correctPW)
         {
+        userAnswer = 1;
         Serial.printf("oikein! \n");
         analogWrite (yellowPin, 255);
         analogWrite (greenPin, 255);
         }
       else
         {
+        userAnswer = 0;
         Serial.printf("väärin! \n"); 
         analogWrite (yellowPin, 0);
         analogWrite (greenPin, 0);
