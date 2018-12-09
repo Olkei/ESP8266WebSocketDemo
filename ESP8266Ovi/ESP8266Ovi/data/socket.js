@@ -24,6 +24,11 @@ package.connect = function() {
     try {
       var msg = JSON.parse(msgevent.data);
       console.log("in :", msg);
+      console.log("level: ", msg.m);
+
+      var lightLevel = ((msg.m /1024) * 100)
+      lightLevel = lightLevel.toFixed(0);
+      document.getElementById("lightLevel").innerHTML = lightLevel;
     } catch (error) {
       console.log(msgevent.data);
     }
@@ -39,7 +44,7 @@ checkConnection = function() {
       .getElementById("status")
       .setAttribute("style", " visibility: visible;");
   }
-  
+
   console.log(diff);
 };
 
