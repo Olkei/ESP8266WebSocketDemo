@@ -75,23 +75,6 @@ void setup()
 
   server.onNotFound([](AsyncWebServerRequest *request) {
     Serial.printf("NOT_FOUND: ");
-    if (request->method() == HTTP_GET)
-      Serial.printf("GET");
-    else if (request->method() == HTTP_POST)
-      Serial.printf("POST");
-    else if (request->method() == HTTP_DELETE)
-      Serial.printf("DELETE");
-    else if (request->method() == HTTP_PUT)
-      Serial.printf("PUT");
-    else if (request->method() == HTTP_PATCH)
-      Serial.printf("PATCH");
-    else if (request->method() == HTTP_HEAD)
-      Serial.printf("HEAD");
-    else if (request->method() == HTTP_OPTIONS)
-      Serial.printf("OPTIONS");
-    else
-      Serial.printf("UNKNOWN");
-    Serial.printf(" http://%s%s\n", request->host().c_str(), request->url().c_str());
 
     if (request->contentLength())
     {
@@ -111,18 +94,6 @@ void setup()
     for (i = 0; i < params; i++)
     {
       AsyncWebParameter *p = request->getParam(i);
-      if (p->isFile())
-      {
-        Serial.printf("_FILE[%s]: %s, size: %u\n", p->name().c_str(), p->value().c_str(), p->size());
-      }
-      else if (p->isPost())
-      {
-        Serial.printf("_POST[%s]: %s\n", p->name().c_str(), p->value().c_str());
-      }
-      else
-      {
-        Serial.printf("_GET[%s]: %s\n", p->name().c_str(), p->value().c_str());
-      }
     }
 
     request->send(404);
@@ -229,8 +200,8 @@ void onWsEvent(AsyncWebSocket *server, AsyncWebSocketClient *client, AwsEventTyp
       const char *pword = root["p"];
 
       ws.text(client->id(), "received");
-      if (root["p"] ==correctPW)
-        {
+      if (root["p"] == correctPW)
+      {
         userAnswer = 1;
         Serial.printf("oikein! \n");
         analogWrite(yellowPin, 255);
@@ -245,14 +216,6 @@ void onWsEvent(AsyncWebSocket *server, AsyncWebSocketClient *client, AwsEventTyp
         analogWrite(redPin, 255);
       }
       eventtime = millis();
-      // Relay message data to all other clients
-      /*for (int i = 0; i < 10; i++)
-      {
-        if (i != client->id())
-        {
-          ws.text(i, msg);
-        }
-      }*/
     }
     else
     {
