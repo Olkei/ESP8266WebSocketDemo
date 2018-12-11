@@ -5,7 +5,7 @@ Coursework for microcontrollers, fall 2018
 
 ## Libraries needed:
     
-ESP8266's filesystem library for SPIFFS operations
+ESP8266's filesystem library for SPIFFS operations: http://esp8266.github.io/Arduino/versions/2.0.0/doc/filesystem.html
 
 ESPAsyncWebServer : https://github.com/me-no-dev/ESPAsyncWebServer
 
