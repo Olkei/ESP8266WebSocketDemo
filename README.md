@@ -1,5 +1,5 @@
-# microcontrollerproject18
-Mikrokontrollerit, syksy 2018
+# ESP8266WebSocketDemo
+Coursework for microcontrollers, fall 2018
 - project can be found under path ESP8266Ovi/ESP8266Ovi, the ESP8266Web is an example using RGB led instead of a light sensor. 
 
 
